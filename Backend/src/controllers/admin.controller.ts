@@ -69,7 +69,7 @@ const adminSignIn = async (req: Request, res: Response, next: NextFunction): Pro
       expiresIn: "1d"
     });
 
-    return responseHandler(res, "Admin Login SuccessFully", 200, token);
+    return responseHandler(res, "Admin Login SuccessFully", 200, { token });
   } catch (error) {
     throw error;
   }

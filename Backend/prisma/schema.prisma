@@ -29,6 +29,7 @@ model User {
   eventDetails Event[]
   bookingDetails Booking[]
   paymentDetails Payment[]
+  ReviewerDetails  Review[]
   
 }
 
@@ -173,6 +174,7 @@ model Event {
   comedianDetails  User         @relation(fields: [comedianId], references: [id])
   venueDetails     Venue        @relation(fields: [venueId], references: [id])
   EventSeatDetails EventSeats[]
+  ReviewerDetails  Review[]
    
 }
 
@@ -189,6 +191,22 @@ model EventSeats {
   eventDetails Event @relation(fields: [eventId], references: [id] , onDelete: Cascade)
   seatDetails  Seats @relation(fields: [seatId], references: [id] , onDelete: Cascade)
   bookedSeatDetails BookedSeat[]
+}
+
+
+// Table for Review :-
+model Review {
+   id  Int @id @default(autoincrement())
+   userId String
+   eventId Int
+   rating Int
+   review String?
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+  //  References :-
+  userDetails User @relation(fields: [userId] , references: [id]) 
+  eventDetails Event @relation(fields: [eventId] , references: [id]) 
 }
 
 enum CodeType {
