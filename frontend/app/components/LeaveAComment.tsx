@@ -56,7 +56,12 @@ function LeaveAComment() {
             control={control}
             name="showId"
             render={({ field }) => (
-              <select className="bg-[#111826]" {...field}>
+              <select
+                defaultValue={"Select Show"}
+                className="bg-[#111826]"
+                {...field}
+              >
+                <option value={""}>Select Show</option>
                 {showDetails?.map((showData) => (
                   <option value={showData.id} key={showData.id}>
                     {showData.showName}
