@@ -16,6 +16,19 @@ export const fetchReviewListService = async (offset: number = 1, limit: number =
     orderBy: {
       createdAt: "desc"
     },
+    include: {
+      userDetails: {
+        select: {
+          firstName: true,
+          lastName: true
+        }
+      },
+      eventDetails: {
+        select: {
+          name: true
+        }
+      }
+    },
     skip: offset,
     take: limit
   });

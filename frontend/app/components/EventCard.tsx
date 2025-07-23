@@ -5,7 +5,12 @@ import { MdPerson } from "react-icons/md";
 import { IoLocationSharp } from "react-icons/io5";
 import { MdAccessTimeFilled } from "react-icons/md";
 import showPoster2 from "@/public/images.png";
+import { useRouter } from "next/navigation";
 function EventCard() {
+  const router = useRouter();
+  function sendToBookNowPage() {
+    router.push("/booking/23");
+  }
   return (
     <div className="w-[25%] h-[60%] rounded-md mt-4">
       <div className="image w-[100%] h-1/2">
@@ -41,7 +46,7 @@ function EventCard() {
         </div>
         <div className="flex w-[100%] items-center justify-between">
           <p className="text-lg font-bold">$45</p>
-          <LightButton btnText="Book Now" />
+          <LightButton btnText="Book Now" callback={sendToBookNowPage} />
         </div>
       </div>
     </div>

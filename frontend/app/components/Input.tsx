@@ -11,13 +11,17 @@ interface InputType {
 function Input({ inputType, placeHolder, register, error }: InputType) {
   return (
     <>
-      <input
-        className="p-2 min-w-[80%] bg-transparent rounded-md placeholder:text-sm"
-        {...register}
-        type={inputType}
-        placeholder={placeHolder}
-      />
-      {error && <p className="text-red-500 font-bold text-sm"> *{error}</p>}
+      <div className="w-full">
+        <input
+          className="w-full text-black min-w-[80%] p-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder:text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+          {...register}
+          type={inputType}
+          placeholder={placeHolder}
+        />
+        {error && (
+          <p className="mt-1 text-sm text-red-600 font-medium">*{error}</p>
+        )}
+      </div>
     </>
   );
 }

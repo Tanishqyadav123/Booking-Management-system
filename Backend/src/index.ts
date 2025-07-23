@@ -11,8 +11,9 @@ const app = express();
 // Defining the limiter :-
 const limiter = rateLimit({
   windowMs: 60 * 1000,
-  message: "Request rate Exceed",
-  limit: 10
+  message: "Too Many Request...Please wait for sometime",
+  limit: 10,
+  skip: (req, res) => req.path === "/api/v1/comedian"
 });
 
 // Adding the middleware for extracting data :-

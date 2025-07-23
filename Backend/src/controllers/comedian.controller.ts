@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { deleteEventByIdSerice, getAllComedianList } from "../repo/comedian.repo";
 import { NextFunction, Request, Response } from "express";
-import { deleteEventByIdSerice } from "../repo/comedian.repo";
 import { ErrorHandler } from "../middlewares/error.middleware";
 import { getEventDetailByIdService } from "../repo/event.repo";
 import { prisma } from "../lib/client";
@@ -104,4 +104,16 @@ const updateEventSeatsPrice = async (req: Request, res: Response, next: NextFunc
   }
 };
 
-export { cancelEventById, updateEventSeatsPrice };
+// API for fetching all the comedians list :-
+const getAllComedians = async (req: Request, res: Response): Promise<any> => {
+  try {
+    const searchVal = (req.query?.search_val || "") as string;
+    const allComedians = await getAllComedianList(searchVal);
+
+    return responseHandler(res, "All Comedians List", 200, allComedians);
+  } catch (error) {
+    throw error;
+  }
+};
+
+export { cancelEventById, updateEventSeatsPrice, getAllComedians };

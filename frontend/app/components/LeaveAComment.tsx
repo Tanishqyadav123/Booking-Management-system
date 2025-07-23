@@ -1,6 +1,7 @@
 "use client";
-
-import React, { useState } from "react";
+// @ts-ignore
+import { AxiosError } from "axios";
+import React, { useEffect, useState } from "react";
 import { FaRegStar } from "react-icons/fa";
 import { TbStarFilled } from "react-icons/tb";
 import Input from "./Input";
@@ -10,34 +11,67 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import DarkButton from "./DarkButton";
 import LightButton from "./LightButton";
+import { addNewReviewService } from "../Services/review.service";
+import toast from "react-hot-toast";
+import { reviewApiResponseType } from "../responseTypes/review.response";
+import { fetchAllCompletedEventListService } from "../Services/viewer.service";
+import { allCompletedEventListType } from "../responseTypes/viewer.response";
 
 export type addAReviewSchemaType = z.infer<typeof addAReviewSchema>;
 function LeaveAComment() {
   let arr = [1, 2, 3, 4, 5];
 
   const [starSelected, setStarSelect] = useState(0);
-
-  let showDetails = [
-    { id: "1", showName: "show1" },
-    { id: "2", showName: "show2" },
-    { id: "3", showName: "show3" },
-    { id: "4", showName: "show4" },
-    { id: "5", showName: "show5" },
-  ];
+  const [allCompletedEvents, setAllCompletedEvents] = useState<
+    allCompletedEventListType[]
+  >([]);
 
   const {
     handleSubmit,
     register,
     control,
+    reset,
     formState: { errors },
   } = useForm<addAReviewSchemaType>({
     resolver: zodResolver(addAReviewSchema),
     mode: "onChange",
   });
 
-  const addNewReview = (data: addAReviewSchemaType) => {
+  const addNewReview = async (data: addAReviewSchemaType) => {
+    try {
+      const { reviewerName, ...rest } = data;
+      const response: reviewApiResponseType = await addNewReviewService({
+        ...rest,
+        eventId: +rest.showId,
+        rating: +rest.stars,
+      });
+
+      toast.success(response?.message);
+    } catch (error: AxiosError) {
+      console.log("Erorv is ", error);
+      toast.error(error?.response?.data?.message || "Error while rating...");
+    } finally {
+      reset();
+      setStarSelect(0);
+    }
     console.log("Data is ", data);
   };
+
+  const fetchAllCompletedEventList = async () => {
+    try {
+      const completedEvents = await fetchAllCompletedEventListService();
+      setAllCompletedEvents(completedEvents.data);
+    } catch (error) {
+      console.log("Error is ", error);
+      toast.error("error while fetching event list for rating");
+    }
+  };
+  // Use Effects :-
+  useEffect(() => {
+    fetchAllCompletedEventList();
+  }, []);
+
+  console.log("Printing the completed Events ", allCompletedEvents);
 
   return (
     <div className="min-w-[50%] min-h-[70%] bg-[#111826] p-4">
@@ -62,9 +96,9 @@ function LeaveAComment() {
                 {...field}
               >
                 <option value={""}>Select Show</option>
-                {showDetails?.map((showData) => (
+                {allCompletedEvents?.map((showData) => (
                   <option value={showData.id} key={showData.id}>
-                    {showData.showName}
+                    {showData.name}
                   </option>
                 ))}
               </select>
