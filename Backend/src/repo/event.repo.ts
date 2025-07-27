@@ -28,6 +28,16 @@ export const getEventDetailByIdService = async (eventId: number) =>
       id: eventId
     },
     include: {
-      EventSeatDetails: true
+      EventSeatDetails: {
+        include: {
+          seatDetails: true
+        }
+      },
+      venueDetails: {
+        select: {
+          name: true,
+          address: true
+        }
+      }
     }
   });

@@ -1,4 +1,4 @@
-import jwt, { type JwtPayload } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, type JwtPayload } from "jsonwebtoken";
 import { NextFunction, Request, Response } from "express";
 import { decodedUserType } from "../@types/auth.types";
 import { ErrorHandler } from "./error.middleware";
@@ -48,6 +48,9 @@ export const authenticationMiddlware = async (req: Request, res: Response, next:
 
     next();
   } catch (error) {
+    if (error instanceof JsonWebTokenError) {
+      throw new ErrorHandler(error.message, 401);
+    }
     throw error;
   }
 };

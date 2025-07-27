@@ -1,5 +1,6 @@
 import React from "react";
 import { FaCrown } from "react-icons/fa";
+import { eventSeatType } from "../interfaces/event.interface";
 function SeatLayout({
   Icon,
   sectionName,
@@ -7,7 +8,7 @@ function SeatLayout({
 }: {
   Icon?: React.ElementType;
   sectionName?: string;
-  eventSeats?: any[]; // NOTE :- need to create a interface for this :-
+  eventSeats?: eventSeatType; // NOTE :- need to create a interface for this :-
 }) {
   let arr = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5,

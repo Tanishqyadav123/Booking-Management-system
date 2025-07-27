@@ -77,19 +77,32 @@ const createNewEvent = async (req: Request, res: Response, next: NextFunction): 
         }
       });
       console.log("Printing the New Add Event", newEvent);
-      const allEventSeats = eventSeats?.map((eventSeat) => ({
-        ...eventSeat,
-        eventId: newEvent.id,
-        price: +eventSeat.price,
-        seatId: +eventSeat.seatId,
-        seatCount: +eventSeat.seatCount
-      }));
+      await Promise.all(
+        (eventSeats ?? [])?.map(async (eventSeat) => {
+          // First Create an entry for Event Seat Details :-
+          const eventSeatDetails = await tx.eventSeats.create({
+            data: {
+              ...eventSeat,
+              eventId: newEvent.id,
+              price: +eventSeat.price,
+              seatId: +eventSeat.seatId,
+              seatCount: +eventSeat.seatCount
+            }
+          });
+          // then for single Seat of that event :-
 
-      if (allEventSeats && allEventSeats?.length > 0) {
-        await tx.eventSeats.createMany({
-          data: allEventSeats
-        });
-      }
+          for (let i = 0; i < +eventSeat.seatCount; i++) {
+            await tx.singleEventSeat.create({
+              data: {
+                seatNumber: `${eventSeat.seatId === "1" ? "V" : eventSeat.seatId === "2" ? "M" : "F"}${i + 1}`,
+                eventSeatId: eventSeatDetails.id
+              }
+            });
+          }
+
+          return eventSeatDetails;
+        })
+      );
 
       return { newEvent };
     });

@@ -12,7 +12,7 @@ function BookingSummary() {
         <BookedSeats />
       </div>
 
-      <div className="sub-total flex items-center justify-between  mt-4 text-sm">
+      <div className="sub-total flex items-center justify-between  mt-6 text-sm">
         <p>SubTotal</p>
         <p>$598.00</p>
       </div>

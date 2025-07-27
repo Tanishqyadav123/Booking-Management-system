@@ -1,6 +1,7 @@
 import adminRouter from "./admin.router";
 import authRouter from "./auth.router";
 import comedianRouter from "./comedian.router";
+import dropDownRouter from "./dropdown.router";
 import eventRouter from "./event.router";
 import locationRouter from "./location.router";
 import reviewRouter from "./review.router";
@@ -19,5 +20,6 @@ router.use("/seat-types", seatTypeRouter);
 router.use("/venue", venueRouter);
 router.use("/event", eventRouter);
 router.use("/review", reviewRouter);
+router.use("/dropdown", dropDownRouter);
 
 export default router;

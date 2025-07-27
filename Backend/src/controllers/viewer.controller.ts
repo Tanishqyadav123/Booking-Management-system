@@ -6,10 +6,18 @@ import { generateFilePath } from "../utils/generateFilepath";
 import { getEventDetailByIdService } from "../repo/event.repo";
 import { responseHandler } from "../handlers/response.handler";
 
-export const getAllUpComingEvents = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+export const getAllUpComingEvents = async (req: Request, res: Response): Promise<any> => {
   try {
     // Fetch all the latest posted events :-
     const allEvents = await getAllLatestEvents();
+
+    if (allEvents.length) {
+      allEvents.forEach((event) => {
+        if (event.eventBanner) {
+          event.eventBanner = generateFilePath(event.eventBanner);
+        }
+      });
+    }
 
     return responseHandler(res, "All Upcoming Events List", 201, allEvents);
   } catch (error) {

@@ -1,7 +1,9 @@
 import React from "react";
 import { FaMusic } from "react-icons/fa6";
 import SeatLayout from "./SeatLayout";
+import { useEventContext } from "../Context/event.context";
 function SeatArragement() {
+  const { eventDetails } = useEventContext();
   return (
     <div className="w-[100%] h-[100%] mt-5 ">
       <div
@@ -14,9 +16,14 @@ function SeatArragement() {
 
       {/* Seat Layout for different Seats */}
       <div className="w-[100%] h-[100%] mt-4 flex flex-col gap-3">
-        <SeatLayout />
-        <SeatLayout />
-        <SeatLayout />
+        {eventDetails?.EventSeatDetails.map((seatDetails) => {
+          return (
+            <SeatLayout
+              sectionName={seatDetails.seatDetails?.seatName}
+              eventSeats={seatDetails}
+            />
+          );
+        })}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { FaMapPin } from "react-icons/fa";
 import LightButton from "./LightButton";
-import DarkButton from "./DarkButton";
+
 function VenueDetails() {
   return (
     <div className="w-[100%] max-h-[20%] p-2  shadow-xl mt-6">

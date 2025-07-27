@@ -11,6 +11,21 @@ export const getAllLatestEvents = async () => {
       startTime: {
         gt: currentTime
       }
+    },
+    include: {
+      comedianDetails: {
+        select: {
+          firstName: true,
+          lastName: true,
+          avatar: true
+        }
+      },
+      venueDetails: {
+        select: {
+          name: true,
+          address: true
+        }
+      }
     }
   });
 };

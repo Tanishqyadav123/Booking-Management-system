@@ -135,11 +135,10 @@ model Booking {
 model BookedSeat {
   id            Int         @id @default(autoincrement())
   bookingId     Int
-  eventSeatId   Int
-  quantity      Int         // Number of seats booked of this type
+  singleSeatId   Int
   booking       Booking     @relation(fields: [bookingId], references: [id])
-  eventSeat     EventSeats  @relation(fields: [eventSeatId], references: [id])
-   status SeatBookingStatus @default(PENDING)
+  singleSeatDetails SingleEventSeat      @relation(fields: [singleSeatId], references: [id])
+  status SeatBookingStatus @default(PENDING)
 }
 
 model Payment {
@@ -190,8 +189,26 @@ model EventSeats {
   /// References :-
   eventDetails Event @relation(fields: [eventId], references: [id] , onDelete: Cascade)
   seatDetails  Seats @relation(fields: [seatId], references: [id] , onDelete: Cascade)
-  bookedSeatDetails BookedSeat[]
+  singleEventSeat SingleEventSeat[]
 }
+
+
+// Table for keeping the track of single Seat Booked or not :-
+model SingleEventSeat {
+   id  Int  @id @default(autoincrement())
+   seatNumber String  // 1,2,3,4...
+   eventSeatId Int
+   isBooked Boolean @default(false)
+   
+
+   // References 
+   eventSeatDetails EventSeats @relation(fields: [eventSeatId] , references: [id])
+   bookedSeatDetails BookedSeat[]
+
+   @@unique([eventSeatId , seatNumber])
+
+}
+
 
 
 // Table for Review :-

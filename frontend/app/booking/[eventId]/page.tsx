@@ -2,12 +2,23 @@
 
 import BookingSummary from "@/app/components/BookingSummary";
 import SeatArragement from "@/app/components/SeatArragement";
-import React from "react";
+import { useEventContext } from "@/app/Context/event.context";
+import { eventDetailsType } from "@/app/interfaces/event.interface";
+import { getEventDetailsByIdService } from "@/app/Services/event.service";
+import { getDate, getEventStartAndEndTime } from "@/app/utils/getEventDate";
+import React, { useContext, useEffect } from "react";
+import toast from "react-hot-toast";
 
-async function page({ params }: { params: Promise<{ eventId: string }> }) {
-  const { eventId } = await params;
+function page({ params }: { params: { eventId: string } }) {
+  let { eventId } = params;
 
+  const { fetchEventDetailsById, eventDetails } = useEventContext();
+  console.log("Event Id is ", eventId);
   // Need to fetch the details using this event Id :-
+
+  useEffect(() => {
+    fetchEventDetailsById(eventId);
+  }, []);
 
   return (
     <div className="min-h-[70%] bg-[#111826] w-[100%] mx-auto p-5">
@@ -15,9 +26,11 @@ async function page({ params }: { params: Promise<{ eventId: string }> }) {
         {/* Seat Arragement */}
         <div className="bg-black w-[100%] h-[100%] rounded flex-1/2 p-4">
           <div className="flex items-start flex-col gap-2">
-            <h1 className="text-xl">Summer Music Festival 2025</h1>
+            <h1 className="text-xl">{eventDetails?.name}</h1>
             <p className="text-sm text-gray-500">
-              Madison Square Garden - July 15,2025 - 8:00PM
+              {eventDetails?.venueDetails?.address} -{" "}
+              {getDate(eventDetails?.startTime!)} -{" "}
+              {getEventStartAndEndTime(eventDetails?.startTime).startTime}
             </p>
           </div>
 

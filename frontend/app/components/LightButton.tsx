@@ -7,10 +7,12 @@ function LightButton({
 }: {
   btnText: string;
   callback?: () => void;
-  type?: "submit" | "button"}) {
+  type?: "submit" | "button";
+}) {
   return (
     <button
       onClick={callback}
+      type={type}
       className=" bg-white  px-4 py-2 cursor-pointer hover:underline text-black rounded-sm text-sm"
     >
       {btnText}
