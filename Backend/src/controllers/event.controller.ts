@@ -1,5 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getAllMyEventsService, getEventDetailByIdService, isVenueBookForThatTimeService } from "../repo/event.repo";
+import {
+  getAllMyEventsService,
+  getEventDetailByIdService,
+  getEventDetailsWithSingleSeats,
+  isVenueBookForThatTimeService
+} from "../repo/event.repo";
 import { NextFunction, Request, Response } from "express";
 import { createNewEventSchema } from "../validations/comedian.validation";
 import { ErrorHandler } from "../middlewares/error.middleware";
@@ -135,4 +140,24 @@ const getEventById = async (req: Request, res: Response, next: NextFunction): Pr
   }
 };
 
-export { allMyEvents, createNewEvent, getEventById };
+const getEventDetailsWithSingleSeat = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { eventId } = req.params;
+
+    if (!eventId) {
+      throw next(new ErrorHandler("Event id is not provided", 400));
+    }
+
+    // Fetching the event Details with their individual Seats :-
+    const eventDetailsWithSeats = await getEventDetailsWithSingleSeats(+eventId);
+
+    if (!eventDetailsWithSeats || !eventDetailsWithSeats?.id) {
+      throw next(new ErrorHandler("Event Details not found", 404));
+    }
+
+    return responseHandler(res, "Event Details with associated single seat details", 200, eventDetailsWithSeats);
+  } catch (error) {
+    throw error;
+  }
+};
+export { allMyEvents, createNewEvent, getEventById, getEventDetailsWithSingleSeat };

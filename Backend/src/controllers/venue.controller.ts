@@ -4,6 +4,7 @@ import {
   deleteVenueByIdService,
   getAllVenueByLocationService,
   getVenueByIdService,
+  getVenueDetailsWithSeatService,
   isEventScheduledOnVenueService,
   isVenueAlreadyExistWithNameAndAddress,
   updateVenueDetailsByIdService
@@ -219,4 +220,32 @@ const deleteVenueById = async (req: Request, res: Response, next: NextFunction):
     throw error;
   }
 };
-export { getAllVenueByLocation, createNewVenue, getVenueById, updateVenueDetails, deleteVenueById };
+
+// Controller for fetch Venue Details By id with Venue Seats :-
+const getVenueDetailsWithSeats = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { venueId } = req.params;
+
+    if (!venueId) {
+      throw next(new ErrorHandler("Venue Id is not provided", 400));
+    }
+
+    const venueDetailsWithSeats = await getVenueDetailsWithSeatService(+venueId);
+
+    if (!venueDetailsWithSeats) {
+      throw next(new ErrorHandler("Venue Details with this Id not found", 400));
+    }
+
+    return responseHandler(res, "Venue Details with Seats ", 200, venueDetailsWithSeats);
+  } catch (error) {
+    throw error;
+  }
+};
+export {
+  getAllVenueByLocation,
+  createNewVenue,
+  getVenueById,
+  updateVenueDetails,
+  deleteVenueById,
+  getVenueDetailsWithSeats
+};

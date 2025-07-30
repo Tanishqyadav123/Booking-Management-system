@@ -14,6 +14,8 @@ import React, { useEffect, useState } from "react";
 import { useForm, FormProvider } from "react-hook-form";
 import toast from "react-hot-toast";
 import z from "zod";
+import uploadImage from "@/public/Upload_Image.png";
+import Image from "next/image";
 
 export type addEventSchemaType = z.infer<typeof addEventSchema>;
 function page() {
@@ -71,7 +73,6 @@ function page() {
     }
   };
 
-  console.log("Event Banner Is ", bannerImage);
   useEffect(() => {
     reset();
   }, []);
@@ -100,16 +101,28 @@ function page() {
           <SeatAndPricing />
         </div>
 
-        <div className="w-[30%] mt-6 flex flex-col gap-3">
-          <input
-            type="file"
-            name="eventBanner"
-            accept="image/*"
-            onChange={handleFileChange}
-          />
+        <div className="w-[30%] mt-12 flex flex-col gap-3">
+          <div className="flex items-center justify-center">
+            <label htmlFor="eventBanner">
+              <p className="uppercase">Upload Banner</p>
+              <Image
+                src={uploadImage}
+                alt="Image for Upload"
+                height={100}
+                width={100}
+              />
+            </label>
+            <input
+              hidden={true}
+              type="file"
+              name="eventBanner"
+              accept="image/*"
+              id="eventBanner"
+              onChange={handleFileChange}
+            />
+          </div>
           <PricingSummary />
-          {/* <LightButton type="submit" btnText="Create Event" /> */}
-          <button type="submit">Event Create</button>
+          <LightButton type="submit" btnText="Create Event" />
         </div>
       </form>
     </FormProvider>

@@ -1,34 +1,37 @@
 import React from "react";
 import { FaCrown } from "react-icons/fa";
-import { eventSeatType } from "../interfaces/event.interface";
+import { eventSeatType, singleSeatType } from "../interfaces/event.interface";
 function SeatLayout({
-  Icon,
+  singleSeats,
   sectionName,
-  eventSeats,
+  eventSeatsDetails,
 }: {
-  Icon?: React.ElementType;
-  sectionName?: string;
-  eventSeats?: eventSeatType; // NOTE :- need to create a interface for this :-
+  singleSeats: singleSeatType[];
+  sectionName: string;
+  eventSeatsDetails: eventSeatType; // NOTE :- need to create a interface for this :-
 }) {
-  let arr = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 2, 3, 4, 5,
-    6, 7, 8, 9, 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-  ];
   return (
     <div className="w-[100%] min-h-[60%] py-4">
       <div className="flex items-center gap-2">
         <FaCrown color="white" size={"2%"} />
-        <h2>VIP Section - $299</h2>
+        <h2>
+          {sectionName} Section - ${eventSeatsDetails.price}
+        </h2>
       </div>
       {/* Seats Location */}
       <div className="seat-location max-w-[45%] mx-auto ">
         <div className="flex items-center justify-center gap-2 flex-wrap ">
-          {arr.map((val, index) => {
+          {singleSeats.map((val, index) => {
             return (
               <div
                 key={index}
                 className="w-8 h-8 bg-gray-500 hover:bg-green-400 rounded"
-              ></div>
+              >
+                {" "}
+                <p className="text-sm text-center">
+                  {val.isBooked ? "L" : val.seatNumber}
+                </p>{" "}
+              </div>
             );
           })}
         </div>

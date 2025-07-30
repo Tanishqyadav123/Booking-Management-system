@@ -39,15 +39,22 @@ export interface SeatDetailsType {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface singleSeatType {
+  id: number;
+  seatNumber: string;
+  eventSeatId: number;
+  isBooked: boolean;
+}
 export interface eventSeatType {
   id: number;
   eventId: number;
   seatId: number;
+  seatName: string;
   seatCount: number;
   price: number;
   createdAt: string;
   updatedAt: string;
-  seatDetails: SeatDetailsType;
 }
 export interface eventDetailsType {
   id: number;
@@ -62,6 +69,6 @@ export interface eventDetailsType {
   createdAt: string;
   updatedAt: string;
   venueDetails: EventVenueDetailsType;
-
   EventSeatDetails: eventSeatType[];
+  allSingleSeats: singleSeatType[ ];
 }

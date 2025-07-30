@@ -1,6 +1,12 @@
 import { prisma } from "../lib/client";
 import { updateVenueType } from "../@types/venue.types";
 
+export const getAllVenueDetailsService = async (cityId: number) =>
+  await prisma.venue.findMany({
+    where: {
+      locationId: cityId
+    }
+  });
 export const getAllVenueByLocationService = async (locationId: number) =>
   await prisma.venue.findMany({
     where: {
@@ -54,5 +60,16 @@ export const deleteVenueByIdService = async (venueId: number) =>
   await prisma.venue.delete({
     where: {
       id: venueId
+    }
+  });
+
+// Get Venue Details with its Seats Details :-
+export const getVenueDetailsWithSeatService = async (venueId: number) =>
+  prisma.venue.findUnique({
+    where: {
+      id: venueId
+    },
+    include: {
+      VenueSeatDetails: true
     }
   });

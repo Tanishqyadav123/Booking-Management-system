@@ -6,7 +6,7 @@ import { Toaster } from "react-hot-toast";
 import Footer from "./components/Footer";
 import { AuthContextProvider } from "./Context/auth.context";
 import { EventContextProvider } from "./Context/event.context";
-
+import { DropDownContextProvider } from "./Context/dropdown.context";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,11 +34,13 @@ export default function RootLayout({
       >
         <AuthContextProvider>
           <EventContextProvider>
-            <div>
-              <Navbar />
-              <main className="flex-grow">{children}</main>
-              <Toaster />
-            </div>
+            <DropDownContextProvider>
+              <div>
+                <Navbar />
+                <main className="flex-grow">{children}</main>
+                <Toaster />
+              </div>
+            </DropDownContextProvider>
           </EventContextProvider>
         </AuthContextProvider>
       </body>

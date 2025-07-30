@@ -16,11 +16,20 @@ function SeatArragement() {
 
       {/* Seat Layout for different Seats */}
       <div className="w-[100%] h-[100%] mt-4 flex flex-col gap-3">
-        {eventDetails?.EventSeatDetails.map((seatDetails) => {
+        {eventDetails?.EventSeatDetails.map((seatDetails, index) => {
+          // Expect the seats for last Seat type :-
+          let skipSeat = 0;
+          for (let i = index - 1; i >= 0; i--) {
+            skipSeat += eventDetails.EventSeatDetails[i].seatCount;
+          }
           return (
             <SeatLayout
-              sectionName={seatDetails.seatDetails?.seatName}
-              eventSeats={seatDetails}
+              sectionName={seatDetails.seatName}
+              eventSeatsDetails={seatDetails}
+              singleSeats={eventDetails.allSingleSeats.slice(
+                skipSeat,
+                skipSeat + seatDetails.seatCount
+              )}
             />
           );
         })}

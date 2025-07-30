@@ -13,16 +13,21 @@ import {
 } from "../responseTypes/dropDown.response";
 import { useFormContext } from "react-hook-form";
 import { addEventSchemaType } from "../event/add/page";
+import { useEventContext } from "../Context/event.context";
+import { getVenueWithSeatDetailsService } from "../Services/venue.service";
 
 function VenueSelection() {
   const [cities, setCities] = useState<locationDropDownType[]>([]);
   const [venues, setVenues] = useState<VenueType[]>([]);
   const [cityId, setCityId] = useState<string>();
+  const { venueDetails, setVenueDetails } = useEventContext();
   const {
     register,
+    watch,
     formState: { errors },
   } = useFormContext<addEventSchemaType>();
 
+  const venueId = watch("venueId");
   const fetchCityDropDownList = async () => {
     try {
       const resData = await locationDropDownService();
@@ -59,6 +64,19 @@ function VenueSelection() {
     }
   };
 
+  const fetchVenueWithSeatDetails = async (venueId: string) => {
+    try {
+      const resData = await getVenueWithSeatDetailsService(+venueId);
+
+      if (resData.success) {
+        toast.success(resData.message);
+        setVenueDetails(resData.data);
+      }
+    } catch (error) {
+      toast.error("error while retrieving venue details");
+    }
+  };
+
   useEffect(() => {
     fetchCityDropDownList();
   }, []);
@@ -69,6 +87,17 @@ function VenueSelection() {
       fetchVenueDropDownList(cityId);
     }
   }, [cityId]);
+
+  // Triggers on venueId Change :-
+
+  useEffect(() => {
+    if (venueId) {
+      if (!venueDetails || (venueDetails && venueDetails.id !== +venueId))
+        // API Call for fetching venue Details with its Seat :-
+
+        fetchVenueWithSeatDetails(venueId);
+    }
+  }, [venueId]);
 
   return (
     <div className="w-[100%]  mt-8 p-4 bg-[#111826] ">

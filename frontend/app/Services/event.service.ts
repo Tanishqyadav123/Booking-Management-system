@@ -39,7 +39,7 @@ export const createNewEventService = async (formData: FormData) => {
 // Service for fetching Event Details By Id :-
 export const getEventDetailsByIdService = async (eventId: number) => {
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/${eventId}`,
+    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/single-seats/${eventId}`,
     {
       headers: {
         Authorization: `Bearer ${token}`,

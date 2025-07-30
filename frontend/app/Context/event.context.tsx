@@ -12,7 +12,9 @@ import toast from "react-hot-toast";
 
 export interface EventContextInterface {
   eventDetails?: eventDetailsType;
+  venueDetails?: VenueData;
   setEventDetails: Dispatch<SetStateAction<eventDetailsType | undefined>>;
+  setVenueDetails: Dispatch<SetStateAction<VenueData | undefined>>;
   fetchEventDetailsById: (eventId: string) => Promise<void>;
 }
 export const EventContext = createContext<EventContextInterface | null>(null);
@@ -24,6 +26,7 @@ export const EventContextProvider = ({
 }) => {
   // State for Event Details with event Seats and Venues Details :-
   const [eventDetails, setEventDetails] = useState<eventDetailsType>();
+  const [venueDetails, setVenueDetails] = useState<VenueData>();
 
   const fetchEventDetailsById = async (eventId: string) => {
     try {
@@ -41,7 +44,13 @@ export const EventContextProvider = ({
 
   return (
     <EventContext.Provider
-      value={{ eventDetails, setEventDetails, fetchEventDetailsById }}
+      value={{
+        eventDetails,
+        setEventDetails,
+        fetchEventDetailsById,
+        venueDetails,
+        setVenueDetails,
+      }}
     >
       {children}
     </EventContext.Provider>
