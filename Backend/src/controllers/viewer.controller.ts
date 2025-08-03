@@ -2,15 +2,42 @@
 import { getAllCompletedEventList, getAllEventsList, getAllLatestEvents } from "../repo/viewer.repo";
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../middlewares/error.middleware";
+import { EventFilterType } from "../@types/viewer.types";
 import { generateFilePath } from "../utils/generateFilepath";
 import { getEventDetailByIdService } from "../repo/event.repo";
 import { responseHandler } from "../handlers/response.handler";
 
-export const getAllUpComingEvents = async (req: Request, res: Response): Promise<any> => {
+export const getAllUpComingEvents = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // Fetch all the latest posted events :-
-    const allEvents = await getAllLatestEvents();
+    const { comedianId, ename, locationId, venueId } = req.query as EventFilterType;
+    let { limit, page } = req.query as EventFilterType;
 
+    if (
+      (page && +page <= 0) ||
+      (limit && +limit <= 0) ||
+      (locationId && +locationId <= 0) ||
+      (venueId && +venueId <= 0)
+    ) {
+      throw next(new ErrorHandler("Invalid Value in Query Params ", 400));
+    }
+
+    if (!page) {
+      page = "1";
+    }
+    if (!limit) {
+      limit = "3";
+    }
+
+    let allEvents = await getAllLatestEvents({ comedianId, ename, locationId, venueId, limit, page });
+
+    if (page || limit) {
+      const Ipage = +page;
+      const ILimit = +limit;
+      const offset = (Ipage - 1) * ILimit;
+
+      allEvents = allEvents.splice(offset, offset + ILimit);
+    }
     if (allEvents.length) {
       allEvents.forEach((event) => {
         if (event.eventBanner) {
@@ -19,7 +46,7 @@ export const getAllUpComingEvents = async (req: Request, res: Response): Promise
       });
     }
 
-    return responseHandler(res, "All Upcoming Events List", 201, allEvents);
+    return responseHandler(res, "All Upcoming Events List", 200, allEvents);
   } catch (error) {
     throw error;
   }

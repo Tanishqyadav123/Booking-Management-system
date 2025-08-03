@@ -10,7 +10,6 @@ import { singleComedianType } from "../responseTypes/comedian.response";
 import { debounce } from "../utils/debouncing";
 
 function page() {
-  let arr = [1, 2, 3, 4, 5, 1, 2, 3, 4, 1, 2, 3, 4];
   const [allComedian, setAllComedian] = useState<singleComedianType[]>([]);
   const [searchVal, setSearchVal] = useState<string>("");
   const fetchComedians = async () => {

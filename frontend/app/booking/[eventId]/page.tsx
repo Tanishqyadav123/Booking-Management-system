@@ -4,7 +4,6 @@ import BookingSummary from "@/app/components/BookingSummary";
 import SeatArragement from "@/app/components/SeatArragement";
 import { useEventContext } from "@/app/Context/event.context";
 import { eventDetailsType } from "@/app/interfaces/event.interface";
-import { getEventDetailsByIdService } from "@/app/Services/event.service";
 import { getDate, getEventStartAndEndTime } from "@/app/utils/getEventDate";
 import React, { useContext, useEffect } from "react";
 import toast from "react-hot-toast";

@@ -8,23 +8,44 @@ import LightButton from "../components/LightButton";
 import { IoIosArrowForward } from "react-icons/io";
 import { IoIosArrowBack } from "react-icons/io";
 import { useRouter } from "next/navigation";
-import { getAllUpComingEventType } from "../interfaces/event.interface";
+import {
+  EventFilterType,
+  getAllUpComingEventType,
+} from "../interfaces/event.interface";
 import toast from "react-hot-toast";
 import { getAllUpComingEventsService } from "../Services/event.service";
 function page() {
   const [events, setEvents] = useState<getAllUpComingEventType[]>([]);
+
+  // States for filtering  :-
+  const [comedianId, setComedianId] = useState<string | undefined>(undefined);
+  const [locationId, setLocationId] = useState<number | undefined>(undefined);
+  const [venueId, setVenueId] = useState<number | undefined>(undefined);
+  const [ename, setEname] = useState<string | undefined>(undefined);
+
   const router = useRouter();
+
   // const token =
-    // typeof localStorage !== undefined ? localStorage.getItem("authToken") : "";
+  // typeof localStorage !== undefined ? localStorage.getItem("authToken") : "";
   function handleSendToAddEvent() {
     router.push("/event/add");
   }
 
-  async function fetchAllUpComingEventList() {
+  async function fetchAllUpComingEventList({
+    comedianId,
+    ename,
+    locationId,
+    venueId,
+  }: EventFilterType) {
     try {
-      const resData = await getAllUpComingEventsService();
+      const resData = await getAllUpComingEventsService({
+        comedianId,
+        ename,
+        locationId,
+        venueId,
+      });
 
-      if (resData.data && resData.data?.length) {
+      if (resData.data) {
         setEvents(resData.data);
       }
 
@@ -35,8 +56,13 @@ function page() {
   }
   useEffect(() => {
     // For Fetching all the UpComing Event List :-
-    fetchAllUpComingEventList();
-  }, []);
+    fetchAllUpComingEventList({
+      ename,
+      locationId: locationId?.toString(),
+      comedianId,
+      venueId: venueId?.toString(),
+    });
+  }, [ename, locationId, comedianId, venueId]);
 
   return (
     <div className="min-h-[70%] w-[80%] mx-auto p-5">
@@ -51,16 +77,26 @@ function page() {
       </div>
 
       {/* Component for search and filter events */}
-      <SearchFilterEvent />
+      <SearchFilterEvent
+        ename={ename}
+        setEname={setEname}
+        comedianId={comedianId}
+        setComedianId={setComedianId}
+        locationId={locationId}
+        setLocationId={setLocationId}
+        venueId={venueId}
+        setVenueId={setVenueId}
+      />
 
       <div className="event-card flex items-center gap-4 justify-center mt-12">
-        {events.map((eventDetails) => {
-          return (
-            // <div key={eventDetails.id}>
-            <EventCard key={eventDetails.id} eventDetails={eventDetails} />
-            // </div>
-          );
-        })}
+        {events.length > 0 &&
+          events.map((eventDetails) => {
+            return (
+              // <div key={eventDetails.id}>
+              <EventCard key={eventDetails.id} eventDetails={eventDetails} />
+              // </div>
+            );
+          })}
       </div>
 
       <div className="pagination mt-5 flex items-center justify-center gap-2">

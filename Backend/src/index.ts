@@ -12,8 +12,8 @@ const app = express();
 const limiter = rateLimit({
   windowMs: 60 * 1000,
   message: "Too Many Request...Please wait for sometime",
-  limit: 10,
-  skip: (req, res) => req.path === "/api/v1/comedian"
+  limit: 20,
+  skip: (req) => req.path === "/api/v1/comedian"
 });
 
 // Adding the middleware for extracting data :-
@@ -26,7 +26,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/public", express.static("uploads"));
-app.use(limiter);
+// app.use(limiter);
 
 app.use("/api/v1/", router);
 

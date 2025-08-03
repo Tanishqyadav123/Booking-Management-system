@@ -5,7 +5,8 @@ import {
   venueDropDownResponseType,
 } from "../responseTypes/dropDown.response";
 
-const token = localStorage.getItem("authToken") || "";
+const token =
+  typeof window !== "undefined" ? localStorage.getItem("authToken") : "";
 export const comedianDropDownService = async () => {
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/dropdown/comedian`,

@@ -7,6 +7,7 @@ export interface EventComedianDetailsType {
 export interface EventVenueDetailsType {
   name: string;
   address: string;
+  locationId: number;
 }
 
 export interface globalResponseType<T> {
@@ -70,5 +71,12 @@ export interface eventDetailsType {
   updatedAt: string;
   venueDetails: EventVenueDetailsType;
   EventSeatDetails: eventSeatType[];
-  allSingleSeats: singleSeatType[ ];
+  allSingleSeats: singleSeatType[];
+}
+
+export interface EventFilterType {
+  ename?: string;
+  comedianId?: string;
+  locationId?: string;
+  venueId?: string;
 }

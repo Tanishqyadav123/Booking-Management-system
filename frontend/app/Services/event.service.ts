@@ -1,16 +1,31 @@
 import axios from "axios";
 import {
   eventDetailsType,
+  EventFilterType,
   getAllUpComingEventType,
   globalResponseType,
 } from "../interfaces/event.interface";
+import { GiToken } from "react-icons/gi";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("authToken") : "";
-export const getAllUpComingEventsService = async () => {
+
+export const getAllUpComingEventsService = async ({
+  ename,
+  comedianId,
+  venueId,
+  locationId,
+}: EventFilterType) => {
+  console.log("Logging the venruId ", venueId);
   const res: { data: globalResponseType<getAllUpComingEventType[]> } =
     await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/viewer/all-upcoming-event`,
+      `${
+        process.env.NEXT_PUBLIC_BACKEND_BASE_URL
+      }/viewer/all-upcoming-event?ename=${ename || ""}&comedianId=${
+        comedianId || ""
+      }&venueId=${venueId && +venueId > 0 ? venueId : ""}&locationId=${
+        locationId || ""
+      }`,
       {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -36,14 +51,13 @@ export const createNewEventService = async (formData: FormData) => {
   return res.data;
 };
 
-// Service for fetching Event Details By Id :-
+// Service for Event Details with single seats :-
 export const getEventDetailsByIdService = async (eventId: number) => {
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/single-seats/${eventId}`,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/single-seats/${eventId}` , {
+       headers : { 
+        "Authorization" : `Bearer ${token}`
+       }
     }
   );
 

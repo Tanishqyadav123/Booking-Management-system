@@ -30,6 +30,7 @@ model User {
   bookingDetails Booking[]
   paymentDetails Payment[]
   ReviewerDetails  Review[]
+  temporarySeatLockDetails temporaryLockSeats[]
   
 }
 
@@ -122,7 +123,7 @@ model Booking {
   amountPaid Decimal  @db.Decimal(10,2)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-   status BookingStatus @default(PENDING)
+  status BookingStatus @default(PENDING)
 
   // References :-
    
@@ -138,7 +139,23 @@ model BookedSeat {
   singleSeatId   Int
   booking       Booking     @relation(fields: [bookingId], references: [id])
   singleSeatDetails SingleEventSeat      @relation(fields: [singleSeatId], references: [id])
-  status SeatBookingStatus @default(PENDING)
+}
+
+
+// Table for temporary lock seats :-
+model temporaryLockSeats {
+   id  Int @id @default(autoincrement())
+   userId String
+   singleSeatId Int
+   expiresAt DateTime  // ISO String
+
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+
+   // References :-
+   userDetails User @relation(fields: [userId] , references: [id])
+   singleSeatDetails SingleEventSeat @relation(fields: [singleSeatId] , references: [id])
 }
 
 model Payment {
@@ -204,6 +221,7 @@ model SingleEventSeat {
    // References 
    eventSeatDetails EventSeats @relation(fields: [eventSeatId] , references: [id])
    bookedSeatDetails BookedSeat[]
+   temporarySeatLockDetails temporaryLockSeats[]
 
    @@unique([eventSeatId , seatNumber])
 

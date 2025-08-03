@@ -5,7 +5,7 @@ import { useFormContext } from "react-hook-form";
 import { addEventSchemaType } from "../event/add/page";
 
 function AddNewEvent() {
-  const {
+const {
     register,
     watch,
     formState: { errors },

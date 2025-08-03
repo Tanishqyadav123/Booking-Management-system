@@ -61,7 +61,8 @@ export const getEventDetailsWithSingleSeats = async (eventId: number) => {
       venueDetails: {
         select: {
           name: true,
-          address: true
+          address: true,
+          locationId: true
         }
       }
     }

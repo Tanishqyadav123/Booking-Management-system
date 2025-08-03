@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ChangeEvent } from "react";
 import { UseFormRegisterReturn } from "react-hook-form";
 
 interface InputType {
@@ -7,6 +7,7 @@ interface InputType {
   register?: UseFormRegisterReturn;
   error?: string;
   isDisable?: boolean;
+  onChange?: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 function Input({
@@ -15,6 +16,7 @@ function Input({
   register,
   error,
   isDisable,
+  onChange,
 }: InputType) {
   return (
     <>
@@ -22,9 +24,10 @@ function Input({
         <input
           className="w-full text-black min-w-[80%] p-3 bg-white border border-gray-300 rounded-lg shadow-sm placeholder:text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
           {...register}
-          disabled = {isDisable}
+          disabled={isDisable}
           type={inputType}
           placeholder={placeHolder}
+          onChange={onChange}
         />
         {error && (
           <p className="mt-1 text-sm text-red-600 font-medium">*{error}</p>
