@@ -121,6 +121,7 @@ model Booking {
   id        Int      @id @default(autoincrement())
   userId    String
   amountPaid Decimal  @db.Decimal(10,2)
+  orderId  String // RazorPay order Id
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   status BookingStatus @default(PENDING)

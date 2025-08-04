@@ -5,3 +5,5 @@ export const TWILIO_PHONE_NUMBER = process.env.TWILIO_PHONE_NUMBER;
 export const NODE_ENV = process.env.NODE_ENV;
 export const JWT_SECRET = process.env.JWT_SECRET;
 export const IP_ADDRESS = process.env.IP_ADDRESS;
+export const RAZORPAY_KEY_ID = process.env.RAZORPAY_KEY_ID;
+export const RAZORPAY_KEY_SECRET = process.env.RAZORPAY_KEY_SECRET;

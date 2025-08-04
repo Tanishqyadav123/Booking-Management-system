@@ -2,9 +2,101 @@ import React from "react";
 import BookedSeats from "./BookedSeats";
 import { useBookingContext } from "../Context/booking.context";
 import LightButton from "./LightButton";
-
+import toast from "react-hot-toast";
+import {
+  makeAnOrderService,
+  verifyPaymentService,
+} from "../Services/booking.service";
+import { generateUniqueReceipt } from "../utils/generate.receipt";
+import { useEventContext } from "../Context/event.context";
+import Script from "next/script";
+import { VerifyPaymentRequestType } from "../interfaces/booking.interface";
+import { useAuth } from "../Context/auth.context";
 function BookingSummary() {
   const { totalPrice, seatDetails } = useBookingContext();
+  const { eventDetails } = useEventContext();
+  const {} = useAuth()
+
+  // Loading the Script for razorPay :-
+  const loadScript = (src: string) =>
+    new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => {
+        console.log("razorpay loaded successfully");
+        resolve(true);
+      };
+      script.onerror = () => {
+        console.log("error in loading razorpay");
+        reject(false);
+      };
+      document.body.appendChild(script);
+    });
+
+  const handleBookTickets = async () => {
+    if (!eventDetails?.id) {
+      throw new Error("Event Id is not present");
+    }
+    const selectedSeatIds = seatDetails.map((seat) => seat.id);
+    const receiptId = generateUniqueReceipt();
+
+    try {
+      const resData = await makeAnOrderService({
+        receiptId,
+        selectedSeatIds,
+        totalPrice,
+        eventId: eventDetails?.id,
+      });
+
+      if (resData.success) {
+        toast.success(resData.message);
+      }
+
+      const isScriptLoaded = await loadScript(
+        "https://checkout.razorpay.com/v1/checkout.js"
+      );
+
+      if (!isScriptLoaded) {
+        throw new Error("Can not load Script");
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: totalPrice * 100, // Same amount as order creation
+        currency: "INR",
+        name: "Latent",
+        description: "Payment",
+        order_id: resData.data.orderId,
+        handler: async function (response: VerifyPaymentRequestType) {
+          // Handle successful payment, e.g., call your verify-payment API
+
+          // Hit the API for Verify Payment :-
+          const verifyPaymentRes = await verifyPaymentService({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+          });
+
+          console.log(verifyPaymentRes, "verifyPaymentRes");
+        },
+        prefill: {
+          name: "John Doe",
+          email: "john.doe@example.com",
+          contact: "9999999999",
+        },
+        theme: {
+          color: "#3399CC",
+        },
+      };
+
+      console.log("Control Reached Here");
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } catch (error) {
+      console.log("error is ", error);
+      toast.error("Booking Seat Failed");
+    }
+  };
 
   return (
     <div className="bg-black rounded-2xl w-[100%] min-h-32 p-4">
@@ -35,7 +127,10 @@ function BookingSummary() {
 
       {totalPrice > 0 && (
         <div className="mt-4 flex items-center justify-center">
-          <LightButton btnText="Book Now" />
+          <LightButton
+            callback={() => handleBookTickets()}
+            btnText="Book Now"
+          />
         </div>
       )}
     </div>
