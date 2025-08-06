@@ -149,7 +149,7 @@ model temporaryLockSeats {
    userId String
    singleSeatId Int
    expiresAt DateTime  // ISO String
-
+   orderId String
    createdAt DateTime @default(now())
    updatedAt DateTime @updatedAt
 

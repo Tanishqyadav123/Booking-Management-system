@@ -1,4 +1,5 @@
-import React from "react";
+"use client";
+import React, { useEffect } from "react";
 import BookedSeats from "./BookedSeats";
 import { useBookingContext } from "../Context/booking.context";
 import LightButton from "./LightButton";
@@ -9,14 +10,19 @@ import {
 } from "../Services/booking.service";
 import { generateUniqueReceipt } from "../utils/generate.receipt";
 import { useEventContext } from "../Context/event.context";
-import Script from "next/script";
 import { VerifyPaymentRequestType } from "../interfaces/booking.interface";
 import { useAuth } from "../Context/auth.context";
-function BookingSummary() {
-  const { totalPrice, seatDetails } = useBookingContext();
-  const { eventDetails } = useEventContext();
-  const {} = useAuth()
 
+function BookingSummary() {
+  const {
+    totalPrice,
+    seatDetails,
+    setSeatDetails,
+    setTotalPrice,
+    setIsBooked,
+  } = useBookingContext();
+  const { eventDetails } = useEventContext();
+  const { userDetails, fetchUserDetails } = useAuth();
   // Loading the Script for razorPay :-
   const loadScript = (src: string) =>
     new Promise((resolve, reject) => {
@@ -77,12 +83,19 @@ function BookingSummary() {
             razorpay_signature: response.razorpay_signature,
           });
 
-          console.log(verifyPaymentRes, "verifyPaymentRes");
+          if (verifyPaymentRes) {
+            // Reset the State :-
+            setSeatDetails([]);
+            setTotalPrice(0);
+            setIsBooked(true);
+            toast.success("Hurray!!! Ticket is booked");
+            // router.push("/payment-success")
+          }
         },
         prefill: {
-          name: "John Doe",
-          email: "john.doe@example.com",
-          contact: "9999999999",
+          name: `${userDetails?.firstName} ${userDetails?.lastName}`,
+          email: userDetails?.email,
+          contact: userDetails?.phoneNumber,
         },
         theme: {
           color: "#3399CC",
@@ -98,6 +111,20 @@ function BookingSummary() {
     }
   };
 
+  // UseEffect to fetch user Details :-
+  useEffect(() => {
+    fetchUserDetails();
+  }, []);
+
+  // useEffect(() => {
+  //   if (eventDetails && eventDetails.id) {
+  //     fetchEventDetailsById(eventDetails?.id.toString());
+  //   }
+  // }, [isBooked]);
+
+  if (!userDetails) {
+    return <>Loading....</>;
+  }
   return (
     <div className="bg-black rounded-2xl w-[100%] min-h-32 p-4">
       <h2 className="text-lg font-bold">Booking Summary</h2>
@@ -129,7 +156,7 @@ function BookingSummary() {
         <div className="mt-4 flex items-center justify-center">
           <LightButton
             callback={() => handleBookTickets()}
-            btnText="Book Now"
+            btnText={`Book Now`}
           />
         </div>
       )}

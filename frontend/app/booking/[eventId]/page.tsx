@@ -3,10 +3,8 @@
 import BookingSummary from "@/app/components/BookingSummary";
 import SeatArragement from "@/app/components/SeatArragement";
 import { useEventContext } from "@/app/Context/event.context";
-import { eventDetailsType } from "@/app/interfaces/event.interface";
 import { getDate, getEventStartAndEndTime } from "@/app/utils/getEventDate";
-import React, { useContext, useEffect } from "react";
-import toast from "react-hot-toast";
+import React, { useEffect } from "react";
 
 function page({ params }: { params: { eventId: string } }) {
   let { eventId } = params;
@@ -17,7 +15,7 @@ function page({ params }: { params: { eventId: string } }) {
 
   useEffect(() => {
     fetchEventDetailsById(eventId);
-  }, []);
+  }, [eventId]);
 
   return (
     <div className="min-h-[70%] bg-[#111826] w-[100%] mx-auto p-5">

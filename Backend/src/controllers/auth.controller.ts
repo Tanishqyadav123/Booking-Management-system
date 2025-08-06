@@ -174,10 +174,7 @@ const signinUser = async (req: Request, res: Response, next: NextFunction): Prom
 
 const getMyProfile = async (req: Request, res: Response): Promise<any> => {
   try {
-    const { userId, userRole } = req.user!;
-
-    console.log(userId, userRole, "Printing the userRole and UserType");
-
+    const { userId } = req.user!;
     // Fetch user Profile Details using userId and userRole :-
     const profileDetails = await fetchUserProfileService({ userId });
 

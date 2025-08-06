@@ -9,13 +9,17 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { getUserDetailsService } from "../Services/auth.service";
+import toast from "react-hot-toast";
+import { UserProfileType } from "../responseTypes/auth.response";
 
 interface authContextInterface {
   isAuthenticated: boolean | null;
-  userId: string;
+  userDetails: UserProfileType | null;
   setIsAuthenticated: Dispatch<SetStateAction<boolean | null>>;
-  setUserId: Dispatch<SetStateAction<string>>;
+  setUserDetails: Dispatch<SetStateAction<UserProfileType | null>>;
   logoutUser: () => void;
+  fetchUserDetails: () => Promise<void>;
 }
 const AuthContext = createContext<authContextInterface | null>(null);
 
@@ -25,7 +29,7 @@ export const AuthContextProvider = ({
   children: React.ReactElement;
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userId, setUserId] = useState<string>("");
+  const [userDetails, setUserDetails] = useState<UserProfileType | null>(null);
   const pathName = usePathname();
   const router = useRouter();
 
@@ -36,8 +40,23 @@ export const AuthContextProvider = ({
   const logoutUser = () => {
     localStorage.removeItem("authToken");
     setIsAuthenticated(false);
-    setUserId("");
+    setUserDetails(null);
     router.push("/login");
+  };
+
+  const fetchUserDetails = async () => {
+    try {
+      const res = await getUserDetailsService();
+      if (res.success) {
+        toast.success(res.message);
+      }
+      if (res.data) {
+        setUserDetails(res.data);
+      }
+    } catch (error) {
+      console.log(error, "line 57");
+      toast.error("Error while fetching the user Details");
+    }
   };
 
   useEffect(() => {
@@ -59,10 +78,11 @@ export const AuthContextProvider = ({
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        userId,
+        userDetails,
         setIsAuthenticated,
-        setUserId,
+        setUserDetails,
         logoutUser,
+        fetchUserDetails,
       }}
     >
       {children}

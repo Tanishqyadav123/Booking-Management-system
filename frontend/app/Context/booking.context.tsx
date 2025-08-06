@@ -14,6 +14,9 @@ interface BookingContextType {
   seatDetails: singleSeatType[];
   setSeatDetails: Dispatch<SetStateAction<singleSeatType[]>>;
   totalPrice: number;
+  setTotalPrice: Dispatch<SetStateAction<number>>;
+  isBooked: boolean;
+  setIsBooked: Dispatch<SetStateAction<boolean>>;
 }
 const BookingContext = createContext<BookingContextType | null>(null);
 
@@ -25,7 +28,7 @@ export const BookingContextProvider = ({
   const [seatDetails, setSeatDetails] = useState<singleSeatType[]>([]);
   const { eventDetails } = useEventContext();
   const [totalPrice, setTotalPrice] = useState<number>(0);
-
+  const [isBooked, setIsBooked] = useState<boolean>(false);
   // Function for calculating the Booking Summary :-
   const calSummaryPrice = (seatDetails: singleSeatType[]) => {
     if (seatDetails.length) {
@@ -55,6 +58,9 @@ export const BookingContextProvider = ({
         seatDetails,
         setSeatDetails,
         totalPrice,
+        setTotalPrice,
+        isBooked,
+        setIsBooked,
       }}
     >
       {children}

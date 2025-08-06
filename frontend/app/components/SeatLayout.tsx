@@ -2,6 +2,7 @@ import React from "react";
 import { FaCrown } from "react-icons/fa";
 import { eventSeatType, singleSeatType } from "../interfaces/event.interface";
 import { useBookingContext } from "../Context/booking.context";
+import { FaLock } from "react-icons/fa";
 function SeatLayout({
   singleSeats,
   sectionName,
@@ -14,6 +15,9 @@ function SeatLayout({
   const { seatDetails, setSeatDetails } = useBookingContext();
 
   const addToSelectedSeats = (seat: singleSeatType) => {
+    if (seat.isBooked) {
+      return;
+    }
     setSeatDetails((prev) => [...prev, seat]);
   };
 
@@ -39,13 +43,17 @@ function SeatLayout({
                   addToSelectedSeats(val);
                 }}
                 key={index}
-                className={`w-8 h-8 ${
-                  isSelected !== -1 ? "bg-green-400" : "bg-gray-500"
-                }  hover:bg-green-400 rounded`}
+                className={`w-8 h-8 flex items-center justify-center  ${
+                  val.isBooked
+                    ? "bg-gray-800 cursor-not-allowed"
+                    : isSelected !== -1
+                    ? "bg-green-400 hover:bg-green-400"
+                    : "bg-gray-500 hover:bg-green-400"
+                }   rounded`}
               >
                 {" "}
                 <p className="text-sm text-center">
-                  {val.isBooked ? "L" : val.seatNumber}
+                  {val.isBooked ? <FaLock /> : val.seatNumber}
                 </p>{" "}
               </div>
             );
