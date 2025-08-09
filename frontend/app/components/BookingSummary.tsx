@@ -1,10 +1,11 @@
 "use client";
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import BookedSeats from "./BookedSeats";
 import { useBookingContext } from "../Context/booking.context";
 import LightButton from "./LightButton";
 import toast from "react-hot-toast";
 import {
+  getMyBookingStatusService,
   makeAnOrderService,
   verifyPaymentService,
 } from "../Services/booking.service";
@@ -20,20 +21,22 @@ function BookingSummary() {
     setSeatDetails,
     setTotalPrice,
     setIsBooked,
+    isBooked,
   } = useBookingContext();
   const { eventDetails } = useEventContext();
   const { userDetails, fetchUserDetails } = useAuth();
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const [bookingId, setBookingId] = useState<null | number>(null);
+
   // Loading the Script for razorPay :-
   const loadScript = (src: string) =>
     new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = src;
       script.onload = () => {
-        console.log("razorpay loaded successfully");
         resolve(true);
       };
       script.onerror = () => {
-        console.log("error in loading razorpay");
         reject(false);
       };
       document.body.appendChild(script);
@@ -90,6 +93,7 @@ function BookingSummary() {
             setIsBooked(true);
             toast.success(verifyPaymentRes.message);
             // router.push("/payment-success")
+            setBookingId(verifyPaymentRes.data.bookingId);
           }
         },
         prefill: {
@@ -114,11 +118,44 @@ function BookingSummary() {
     fetchUserDetails();
   }, []);
 
-  // useEffect(() => {
-  //   if (eventDetails && eventDetails.id) {
-  //     fetchEventDetailsById(eventDetails?.id.toString());
-  //   }
-  // }, [isBooked]);
+  const isTicketConfirmed = async () => {
+    try {
+      if (!bookingId) {
+        throw new Error("Booking id is present");
+      }
+      const resData = await getMyBookingStatusService(bookingId);
+
+      if (resData.success) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+
+          if (resData.data?.bookingStatus === "COMPLETED") {
+            toast.success("Booking Confirmed ");
+          } else if (resData.data?.bookingStatus === "FAILED") {
+            toast.success("Booking Failed ");
+          }
+        }
+      }
+    } catch (error) {
+      toast.error("Error in fetching the booking status");
+    }
+  };
+  useEffect(() => {
+    if (isBooked) {
+      // Poll the status endpoint in event 2 secs :- to know the current status on my booking
+      timerRef.current = setInterval(() => {
+        isTicketConfirmed();
+      }, 2000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isBooked]);
 
   if (!userDetails) {
     return <>Loading....</>;

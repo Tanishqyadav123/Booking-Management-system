@@ -37,7 +37,6 @@ export const BookingContextProvider = ({
           (es) => es.id === curr.eventSeatId
         )?.price;
 
-        console.log("Type of price is ", price, typeof price);
         acc += (price && +price) || 0;
         return acc;
       }, 0);

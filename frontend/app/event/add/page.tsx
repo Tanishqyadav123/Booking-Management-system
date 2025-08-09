@@ -52,15 +52,12 @@ function page() {
       });
     }
 
-    console.log("Printing the Form data ", formData);
-
     try {
       // Hit the API for creating the event :-
       const resData: any = await createNewEventService(formData);
 
       toast.success(resData.message);
     } catch (error) {
-      console.log("Error is ", error);
       toast.error("Event can not be created");
     } finally {
       reset();
@@ -77,9 +74,6 @@ function page() {
     reset();
   }, []);
 
-  useEffect(() => {
-    console.log("Errors are ", methods.formState.errors);
-  }, [methods.formState.errors]);
   return (
     <FormProvider {...methods}>
       <form

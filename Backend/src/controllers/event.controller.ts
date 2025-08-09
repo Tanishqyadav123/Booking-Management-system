@@ -36,8 +36,7 @@ const createNewEvent = async (req: Request, res: Response, next: NextFunction): 
     const { userId } = req.user!;
 
     const file = req.file;
-    const { success, data, error } = createNewEventSchema.safeParse(req.body);
-    console.log("Error are ", error?.errors);
+    const { success, data } = createNewEventSchema.safeParse(req.body);
 
     if (!success) {
       throw next(new ErrorHandler("Validation Failed", 400));
@@ -81,7 +80,6 @@ const createNewEvent = async (req: Request, res: Response, next: NextFunction): 
           entireVenue: entireVenue === "true" ? true : false
         }
       });
-      console.log("Printing the New Add Event", newEvent);
       await Promise.all(
         (eventSeats ?? [])?.map(async (eventSeat) => {
           // First Create an entry for Event Seat Details :-

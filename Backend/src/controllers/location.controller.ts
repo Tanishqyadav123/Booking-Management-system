@@ -15,7 +15,6 @@ import { responseHandler } from "../handlers/response.handler";
 const addNewLocation = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
     // Parsing the add New Location Data :-
-    console.log("req.fole ", req.file);
     const { userId } = req.user!;
     const { success, data } = addNewLocationSchema.safeParse(req.body);
 
@@ -29,7 +28,6 @@ const addNewLocation = async (req: Request, res: Response, next: NextFunction): 
 
     return responseHandler(res, "Location Added SuccessFully", 201, newLocation);
   } catch (error) {
-    console.log("Error is ", error);
     throw error;
   }
 };
@@ -40,7 +38,6 @@ const getAllLocation = async (req: Request, res: Response): Promise<any> => {
 
     allLocations.forEach((locationDetails) => {
       if (locationDetails.locationImage) {
-        // console.log("my file path", filePath);
         locationDetails.locationImage = generateFilePath(locationDetails.locationImage);
       }
     });
@@ -114,7 +111,6 @@ const updateLocationDetails = async (req: Request, res: Response, next: NextFunc
 
     return responseHandler(res, "Updated Location Details", 200, updatedDetails);
   } catch (error) {
-    console.log("error ", error);
     throw error;
   }
 };

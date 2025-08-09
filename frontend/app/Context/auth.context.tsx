@@ -54,7 +54,6 @@ export const AuthContextProvider = ({
         setUserDetails(res.data);
       }
     } catch (error) {
-      console.log(error, "line 57");
       toast.error("Error while fetching the user Details");
     }
   };
@@ -70,7 +69,6 @@ export const AuthContextProvider = ({
       router.push("/login");
       setIsAuthenticated(false);
     } else {
-      console.log("Is Comming here ", authToken);
       setIsAuthenticated(authToken ? true : false);
     }
   }, []);

@@ -4,7 +4,8 @@ import {
   isExistInBookedSeats,
   isExistTemporaryTableAndNotExpired,
   isValidEventIdForBooking,
-  isValidSeatIds
+  isValidSeatIds,
+  isYourBookingId
 } from "../repo/booking.repo";
 import { NextFunction, Request, Response } from "express";
 import { PAYMENT_QUEUE, RAZORPAY_KEY_SECRET } from "../config";
@@ -162,14 +163,35 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction): P
       userId
     };
 
-    console.log("Off Loading the payment load ", paymentJson);
     channel?.sendToQueue(PAYMENT_QUEUE!, Buffer.from(JSON.stringify(paymentJson)), {
       persistent: true
     });
 
-    return responseHandler(res, "Payment Verification Process Initiated", 200);
+    return responseHandler(res, "Payment Verification Process Initiated", 200, { bookingId: bookingDetails.id });
   } catch (error) {
     throw error;
   }
 };
-export { createOrder, verifyPayment };
+
+const getCurrentBookingStatus = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+  try {
+    const { bookingId } = req.params;
+    const { userId } = req.user!;
+    if (!bookingId) {
+      throw next(new ErrorHandler("Booking Id is not provided", 400));
+    }
+
+    // Verify the booking Id is corresponding to this user only :-
+    const isValidBookingId = await isYourBookingId(+bookingId, userId);
+
+    if (!isValidBookingId) {
+      throw next(new ErrorHandler("Invalid Booking Id", 400));
+    }
+
+    // Return the status for this booking :-
+    return responseHandler(res, "Your Booking status", 200, { bookingStatus: isValidBookingId.status });
+  } catch (error) {
+    throw error;
+  }
+};
+export { createOrder, verifyPayment, getCurrentBookingStatus };

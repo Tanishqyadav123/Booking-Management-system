@@ -3,11 +3,11 @@ import {
   CreateOrderResponseType,
   VerifyPaymentRequestType,
 } from "../interfaces/booking.interface";
+import { globalResponseType } from "../interfaces/event.interface";
 
 const token =
   typeof window !== "undefined" ? localStorage.getItem("authToken") : "";
 
-console.log("Token Up", token);
 export const makeAnOrderService = async ({
   receiptId,
   selectedSeatIds,
@@ -19,7 +19,6 @@ export const makeAnOrderService = async ({
   receiptId: string;
   eventId: number;
 }) => {
-  console.log("Token inside", token);
   const res = await axios.post(
     `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/booking/create-order`,
     {
@@ -35,7 +34,6 @@ export const makeAnOrderService = async ({
     }
   );
 
-  console.log(res.data);
   return res.data as CreateOrderResponseType;
 };
 
@@ -58,7 +56,22 @@ export const verifyPaymentService = async ({
     }
   );
 
-  console.log("Verification of payment response is here", res.data);
+  return res.data as {
+    message: string;
+    success: boolean;
+    data: { bookingId: number };
+  };
+};
 
-  return res.data as { message: string; success: boolean };
+export const getMyBookingStatusService = async (bookingId: number) => {
+  const res = await axios.get(
+    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/booking/status/${bookingId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+
+  return res.data as globalResponseType<{ bookingStatus: string }>;
 };

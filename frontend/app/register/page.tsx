@@ -42,7 +42,6 @@ function page() {
     try {
       if (role === 1) {
         //   Hit the API for Admin :-
-        console.log("Printing the signup form data for admin ", data);
 
         await adminRegisterService({ ...data, userType: userRoleType.ADMIN });
       } else {

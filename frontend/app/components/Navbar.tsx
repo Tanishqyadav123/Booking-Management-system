@@ -20,7 +20,6 @@ function Navbar() {
     router.push("/register");
   };
   useEffect(() => {
-    console.log("Print Token", isAuthenticated);
   }, [isAuthenticated]);
 
   if (isAuthenticated == undefined || isAuthenticated == null) {

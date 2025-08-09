@@ -10,7 +10,6 @@ function page({ params }: { params: { eventId: string } }) {
   let { eventId } = params;
 
   const { fetchEventDetailsById, eventDetails } = useEventContext();
-  console.log("Event Id is ", eventId);
   // Need to fetch the details using this event Id :-
 
   useEffect(() => {

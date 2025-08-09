@@ -32,7 +32,6 @@ export const EventContextProvider = ({
     try {
       const resData = await getEventDetailsByIdService(+eventId);
 
-      console.log(resData.data, "resData.data");
       if (resData.success) {
         setEventDetails(resData.data);
       }

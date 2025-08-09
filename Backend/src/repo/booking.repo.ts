@@ -76,3 +76,12 @@ export const isExistInBookedSeats = async (seatIds: number[]) => {
 
   return false;
 };
+
+// Check if bookingId is for this user Only :-
+export const isYourBookingId = async (bookingId: number, userId: string) =>
+  await prisma.booking.findUnique({
+    where: {
+      id: bookingId,
+      userId
+    }
+  });

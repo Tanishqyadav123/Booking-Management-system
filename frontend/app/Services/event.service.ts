@@ -16,7 +16,6 @@ export const getAllUpComingEventsService = async ({
   venueId,
   locationId,
 }: EventFilterType) => {
-  console.log("Logging the venruId ", venueId);
   const res: { data: globalResponseType<getAllUpComingEventType[]> } =
     await axios.get(
       `${
@@ -54,10 +53,11 @@ export const createNewEventService = async (formData: FormData) => {
 // Service for Event Details with single seats :-
 export const getEventDetailsByIdService = async (eventId: number) => {
   const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/single-seats/${eventId}` , {
-       headers : { 
-        "Authorization" : `Bearer ${token}`
-       }
+    `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/event/single-seats/${eventId}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     }
   );
 

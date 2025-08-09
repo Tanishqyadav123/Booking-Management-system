@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Request, Response } from "express";
 
 export const responseHandler = (res: Response, message: string, statusCode: number, data?: any) =>

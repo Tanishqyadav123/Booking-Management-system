@@ -48,13 +48,11 @@ function LeaveAComment() {
 
       toast.success(response?.message);
     } catch (error: AxiosError) {
-      console.log("Erorv is ", error);
       toast.error(error?.response?.data?.message || "Error while rating...");
     } finally {
       reset();
       setStarSelect(0);
     }
-    console.log("Data is ", data);
   };
 
   const fetchAllCompletedEventList = async () => {
@@ -62,7 +60,6 @@ function LeaveAComment() {
       const completedEvents = await fetchAllCompletedEventListService();
       setAllCompletedEvents(completedEvents.data);
     } catch (error) {
-      console.log("Error is ", error);
       toast.error("error while fetching event list for rating");
     }
   };
@@ -71,7 +68,6 @@ function LeaveAComment() {
     fetchAllCompletedEventList();
   }, []);
 
-  console.log("Printing the completed Events ", allCompletedEvents);
 
   return (
     <div className="min-w-[50%] min-h-[70%] bg-[#111826] p-4">
