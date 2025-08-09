@@ -83,12 +83,12 @@ function BookingSummary() {
             razorpay_signature: response.razorpay_signature,
           });
 
-          if (verifyPaymentRes) {
+          if (verifyPaymentRes.success) {
             // Reset the State :-
             setSeatDetails([]);
             setTotalPrice(0);
             setIsBooked(true);
-            toast.success("Hurray!!! Ticket is booked");
+            toast.success(verifyPaymentRes.message);
             // router.push("/payment-success")
           }
         },
@@ -102,11 +102,9 @@ function BookingSummary() {
         },
       };
 
-      console.log("Control Reached Here");
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (error) {
-      console.log("error is ", error);
       toast.error("Booking Seat Failed");
     }
   };

@@ -4,7 +4,7 @@ import {
   updateUserProfileType,
   upsertVerificationCodeType
 } from "../@types/auth.types";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { userType } from "../entity/auth.entity";
 
 export const upsertVerificationCodeService = async ({

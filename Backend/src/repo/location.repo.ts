@@ -1,5 +1,5 @@
 import { addNewLocationType, updateLocationType } from "../@types/location.types";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 
 export const addNewLocationService = async (addNewLocationDetails: addNewLocationType) =>
   await prisma.location.create({

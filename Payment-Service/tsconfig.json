@@ -7,10 +7,11 @@
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "paths": {
+        "@shared/*": ["../shared/src/*"]
+    }
   },
   "include": ["src/**/*" , "../shared/src/**/*"],
-  "exclude": ["node_modules"],
-  "files": ["./src/@types/index.d.ts"]  
-
+  "exclude": ["node_modules"]
 }

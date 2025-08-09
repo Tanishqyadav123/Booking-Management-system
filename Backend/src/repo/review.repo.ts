@@ -1,5 +1,5 @@
 import { addNewReviewInterface } from "../@types/review.types";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 
 export const addNewReviewService = async ({ eventId, rating, review, userId }: addNewReviewInterface) =>
   await prisma.review.create({

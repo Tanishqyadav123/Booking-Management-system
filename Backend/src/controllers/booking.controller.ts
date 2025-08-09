@@ -7,11 +7,12 @@ import {
   isValidSeatIds
 } from "../repo/booking.repo";
 import { NextFunction, Request, Response } from "express";
+import { PAYMENT_QUEUE, RAZORPAY_KEY_SECRET } from "../config";
 import crypto from "crypto";
 import { ErrorHandler } from "../middlewares/error.middleware";
+import { getRabbitMQChannel } from "../../../shared/src/config/rabbitMQ.config";
 import { prisma } from "../lib/client";
 import { razorpay } from "../config/razorpay.config";
-import { RAZORPAY_KEY_SECRET } from "../config";
 import { responseHandler } from "../handlers/response.handler";
 const createOrder = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
   try {
@@ -145,72 +146,28 @@ const verifyPayment = async (req: Request, res: Response, next: NextFunction): P
       throw next(new ErrorHandler("Payment Not Verified!!!", 402));
     }
 
-    console.log("Is here API hittinhg");
-    //Creating a transaction :-
-    await prisma.$transaction(async (tx) => {
-      // Updating the booking status TO "COMPLETED" :-
-      await tx.booking.update({
-        where: {
-          id: bookingDetails.id
-        },
-        data: {
-          status: "COMPLETED"
-        }
-      });
+    // Pushing in to my Payment Queue for off-loading the load :-
 
-      // Creating an entry in the Payment table with razorpay Payment Id :-
+    const { channel } = await getRabbitMQChannel();
 
-      await tx.payment.create({
-        data: {
-          paymentKey: razorpay_payment_id,
-          userId,
-          bookingId: bookingDetails.id
-        }
-      });
+    if (!channel) {
+      throw next(new ErrorHandler("Payment Queue is not initialized", 500));
+    }
 
-      // remove all the temporary Locked seats corresponding to that booking and add into the booked seat table :-
-      const allTemporaryLockedSeats = await tx.temporaryLockSeats.findMany({
-        where: {
-          orderId: razorpay_order_id
-        }
-      });
+    const paymentJson = {
+      bookingDetailsId: bookingDetails.id,
+      status: "COMPLETED",
+      razorpay_payment_id,
+      order_id: razorpay_order_id,
+      userId
+    };
 
-      if (allTemporaryLockedSeats && allTemporaryLockedSeats.length > 0) {
-        const ids = allTemporaryLockedSeats.map((x) => x.id);
-        await tx.temporaryLockSeats.deleteMany({
-          where: {
-            id: {
-              in: ids
-            }
-          }
-        });
-      }
-      const bookedSeatsData = allTemporaryLockedSeats.map((temporarySeats) => ({
-        bookingId: bookingDetails.id,
-        singleSeatId: temporarySeats.singleSeatId
-      }));
-
-      if (bookedSeatsData && bookedSeatsData.length > 0) {
-        await tx.bookedSeat.createMany({
-          data: bookedSeatsData
-        });
-      }
-      // update the entry for singleSeatId to IsBooked "True"
-      const allSingleSeatsId = allTemporaryLockedSeats.map((tL) => tL.singleSeatId);
-
-      await tx.singleEventSeat.updateMany({
-        where: {
-          id: {
-            in: allSingleSeatsId
-          }
-        },
-        data: {
-          isBooked: true
-        }
-      });
+    console.log("Off Loading the payment load ", paymentJson);
+    channel?.sendToQueue(PAYMENT_QUEUE!, Buffer.from(JSON.stringify(paymentJson)), {
+      persistent: true
     });
 
-    return responseHandler(res, "Payment Confirmed SuccessFully", 200);
+    return responseHandler(res, "Payment Verification Process Initiated", 200);
   } catch (error) {
     throw error;
   }

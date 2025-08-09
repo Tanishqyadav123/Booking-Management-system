@@ -1,5 +1,5 @@
 import { EventFilterType } from "../@types/viewer.types";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 
 export const getAllLatestEvents = async ({ ename, comedianId, venueId, locationId }: EventFilterType) => {
   const currentTime = new Date().toISOString();

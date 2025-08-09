@@ -1,4 +1,4 @@
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { updateVenueType } from "../@types/venue.types";
 
 export const getAllVenueDetailsService = async (cityId: number) =>

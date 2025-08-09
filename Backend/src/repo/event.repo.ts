@@ -1,5 +1,5 @@
 import { isVenueBusyType } from "../@types/comedian.types";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { SingleEventSeatType } from "../@types/event.types";
 
 export const getAllMyEventsService = async ({ comedianId }: { comedianId: string }) =>

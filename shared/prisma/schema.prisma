@@ -1,0 +1,275 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  firstName String
+  lastName  String
+  password  String
+  phoneNumber String @unique
+  userType  UserType
+  avatar    String? // User Avatar Url
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  eventDetails Event[]
+  bookingDetails Booking[]
+  paymentDetails Payment[]
+  ReviewerDetails  Review[]
+  temporarySeatLockDetails temporaryLockSeats[]
+  
+}
+
+model AdminUser {
+  id              String     @id @default(uuid())
+  email           String     @unique
+  phoneNumber     String     @unique
+  firstName       String
+  lastName        String
+  password        String
+  userType        UserType   @default(ADMIN)
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  locationDetails Location[]
+}
+
+model verificationCode {
+    id   Int @id  @default(autoincrement())
+    code String
+    phoneNumber String @unique
+    expiry    DateTime
+    codeType   CodeType
+    isVerified Boolean  @default(false)
+    createdAt       DateTime   @default(now())
+    updatedAt       DateTime   @updatedAt 
+
+}
+
+model Location {
+  id            Int      @id @default(autoincrement())
+  name          String
+  adminId       String
+  locationImage String? // Image Url
+  description   String?
+  state         String
+  country       String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // References :-
+  adminDetails AdminUser @relation(fields: [adminId], references: [id])
+  venueDetails Venue[]
+
+  @@unique([name , state , country])
+}
+
+model Venue {
+  id         Int      @id @default(autoincrement())
+  name       String
+  locationId Int
+  address    String
+  venueImage String? // Venue Image Url
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  venuePrice Decimal  @db.Decimal(10, 2)
+  // References :-
+  locationDetails  Location     @relation(fields: [locationId], references: [id] , onDelete: Cascade)
+  VenueSeatDetails VenueSeats[]
+  EventDetails     Event[]
+}
+
+model VenueSeats {
+  id        Int      @id @default(autoincrement())
+  venueId   Int
+  seatId    Int
+  seatCount Int
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// References :-
+  venueDetails Venue @relation(fields: [venueId], references: [id] , onDelete: Cascade)
+  seatDetails  Seats @relation(fields: [seatId], references: [id] , onDelete: Cascade)
+}
+
+model Seats {
+  id              Int      @id @default(autoincrement())
+  seatName        SeatType
+  seatDescription String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  VenueDetails VenueSeats[]
+  EventDetails EventSeats[]
+}
+
+model Booking {
+  id        Int      @id @default(autoincrement())
+  userId    String
+  amountPaid Decimal  @db.Decimal(10,2)
+  orderId  String // RazorPay order Id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status BookingStatus @default(PENDING)
+
+  // References :-
+   
+   userDetails       User       @relation(fields: [userId] , references: [id])
+   paymentDetails    Payment[]
+   bookedSeatDetails  BookedSeat[]
+
+}
+
+model BookedSeat {
+  id            Int         @id @default(autoincrement())
+  bookingId     Int
+  singleSeatId   Int
+  booking       Booking     @relation(fields: [bookingId], references: [id])
+  singleSeatDetails SingleEventSeat      @relation(fields: [singleSeatId], references: [id])
+}
+
+
+// Table for temporary lock seats :-
+model temporaryLockSeats {
+   id  Int @id @default(autoincrement())
+   userId String
+   singleSeatId Int
+   expiresAt DateTime  // ISO String
+   orderId String
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+
+   // References :-
+   userDetails User @relation(fields: [userId] , references: [id])
+   singleSeatDetails SingleEventSeat @relation(fields: [singleSeatId] , references: [id])
+}
+
+model Payment {
+  id         Int      @id @default(autoincrement())
+  paymentKey String // RazorPay Payment Key
+  userId     String
+  bookingId  Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+    // References :-
+   
+   userDetails  User @relation(fields: [userId], references: [id])
+   bookingDetails Booking       @relation(fields: [bookingId] , references: [id])
+
+}
+
+model Event {
+  id          Int      @id @default(autoincrement())
+  comedianId  String
+  venueId     Int
+  eventBanner String // Banner Url
+  startTime   DateTime
+  endTime    DateTime
+  name        String
+  description String?
+  entireVenue Boolean 
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // References :-
+  comedianDetails  User         @relation(fields: [comedianId], references: [id])
+  venueDetails     Venue        @relation(fields: [venueId], references: [id])
+  EventSeatDetails EventSeats[]
+  ReviewerDetails  Review[]
+   
+}
+
+model EventSeats {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  seatId    Int
+  seatCount Int
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  /// References :-
+  eventDetails Event @relation(fields: [eventId], references: [id] , onDelete: Cascade)
+  seatDetails  Seats @relation(fields: [seatId], references: [id] , onDelete: Cascade)
+  singleEventSeat SingleEventSeat[]
+}
+
+
+// Table for keeping the track of single Seat Booked or not :-
+model SingleEventSeat {
+   id  Int  @id @default(autoincrement())
+   seatNumber String  // 1,2,3,4...
+   eventSeatId Int
+   isBooked Boolean @default(false)
+   
+
+   // References 
+   eventSeatDetails EventSeats @relation(fields: [eventSeatId] , references: [id])
+   bookedSeatDetails BookedSeat[]
+   temporarySeatLockDetails temporaryLockSeats[]
+
+   @@unique([eventSeatId , seatNumber])
+
+}
+
+
+
+// Table for Review :-
+model Review {
+   id  Int @id @default(autoincrement())
+   userId String
+   eventId Int
+   rating Int
+   review String?
+   createdAt DateTime @default(now())
+   updatedAt DateTime @updatedAt
+
+  //  References :-
+  userDetails User @relation(fields: [userId] , references: [id]) 
+  eventDetails Event @relation(fields: [eventId] , references: [id]) 
+}
+
+enum CodeType {
+   FORGOT
+   VERIFY
+}
+
+enum UserType {
+  COMEDIAN
+  VIEWER
+  ADMIN
+}
+
+enum SeatType {
+  VIP
+  MID_RANGE
+  FRONT
+}
+
+enum SeatBookingStatus {
+  PENDING
+  CONFIRMED
+  EXPIRED
+}
+enum BookingStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  FAILED
+}

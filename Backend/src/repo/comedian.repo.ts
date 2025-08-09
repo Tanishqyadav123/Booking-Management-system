@@ -1,4 +1,4 @@
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 
 export const deleteEventByIdSerice = async (eventId: number) =>
   await prisma.event.delete({
