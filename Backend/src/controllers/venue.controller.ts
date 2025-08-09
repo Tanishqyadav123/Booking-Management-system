@@ -13,7 +13,7 @@ import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../middlewares/error.middleware";
 import { generateFilePath } from "../utils/generateFilepath";
 import { getLocationByIdService } from "../repo/location.repo";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { responseHandler } from "../handlers/response.handler";
 
 const getAllVenueByLocation = async (req: Request, res: Response, next: NextFunction): Promise<any> => {

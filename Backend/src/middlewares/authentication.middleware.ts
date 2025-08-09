@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from "express";
 import { decodedUserType } from "../@types/auth.types";
 import { ErrorHandler } from "./error.middleware";
 import { JWT_SECRET } from "../config";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { userType } from "../entity/auth.entity";
 
 export const authenticationMiddlware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

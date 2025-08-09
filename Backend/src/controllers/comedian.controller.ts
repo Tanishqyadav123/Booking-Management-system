@@ -3,7 +3,7 @@ import { deleteEventByIdSerice, getAllComedianList } from "../repo/comedian.repo
 import { NextFunction, Request, Response } from "express";
 import { ErrorHandler } from "../middlewares/error.middleware";
 import { getEventDetailByIdService } from "../repo/event.repo";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { responseHandler } from "../handlers/response.handler";
 import { updateEventSeatPriceSchema } from "../validations/comedian.validation";
 import { userType } from "../entity/auth.entity";

@@ -10,7 +10,7 @@ import { createNewEventSchema } from "../validations/comedian.validation";
 import { ErrorHandler } from "../middlewares/error.middleware";
 import { generateFilePath } from "../utils/generateFilepath";
 import { getVenueByIdService } from "../repo/venue.repo";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { responseHandler } from "../handlers/response.handler";
 
 // Controller for comedian Routes :-

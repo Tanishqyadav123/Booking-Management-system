@@ -11,7 +11,7 @@ import { PAYMENT_QUEUE, RAZORPAY_KEY_SECRET } from "../config";
 import crypto from "crypto";
 import { ErrorHandler } from "../middlewares/error.middleware";
 import { getRabbitMQChannel } from "../../../shared/src/config/rabbitMQ.config";
-import { prisma } from "../lib/client";
+import { prisma } from "../../../shared/src/lib/client";
 import { razorpay } from "../config/razorpay.config";
 import { responseHandler } from "../handlers/response.handler";
 const createOrder = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
