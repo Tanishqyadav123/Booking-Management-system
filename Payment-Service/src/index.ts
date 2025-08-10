@@ -28,8 +28,8 @@ async function init() {
           userId,
         }: PaymentPayloadType = JSON.parse(msg.content.toString());
 
-
         //Creating a transaction :-
+        let allTemporaryLockedSeats: any[] = [];
         const singleSeatUpdate = await prisma.$transaction(async (tx) => {
           // Updating the booking status TO "COMPLETED" :-
           await tx.booking.update({
@@ -52,9 +52,12 @@ async function init() {
           });
 
           // remove all the temporary Locked seats corresponding to that booking and add into the booked seat table :-
-          const allTemporaryLockedSeats = await tx.temporaryLockSeats.findMany({
+          allTemporaryLockedSeats = await tx.temporaryLockSeats.findMany({
             where: {
               orderId: order_id,
+            },
+            include: {
+              singleSeatDetails: true,
             },
           });
 
@@ -109,19 +112,65 @@ async function init() {
           },
           select: {
             email: true,
+            firstName: true,
+            lastName: true,
           },
         });
 
+        // Seat Details / Seat Name :-
+
         if (!userDetails) throw new Error("User Details not found");
 
-        const emailPayloadJson = {
-          userEmail: userDetails?.email,
-          text: `Thanks you choosing us , your ticket is confirmed`,
-        };
-        channel.sendToQueue(
-          EMAIL_QUEUE!,
-          Buffer.from(JSON.stringify(emailPayloadJson))
-        );
+        if (allTemporaryLockedSeats.length) {
+          let seatDetails = await prisma.bookedSeat.findMany({
+            where: {
+              bookingId: bookingDetailsId,
+            },
+            include: {
+              singleSeatDetails: {
+                select: {
+                  seatNumber: true,
+                  eventSeatDetails: {
+                    select: {
+                      eventDetails: {
+                        select: {
+                          name: true,
+                          startTime: true,
+                          endTime: true,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          });
+
+          const emailPayloadJson = {
+            viewerName: `${userDetails.firstName} ${userDetails.lastName}`,
+            userEmail: userDetails?.email,
+            text: `Thanks you choosing us , your ticket is confirmed`,
+            bookedSeatNumbers: seatDetails.map(
+              (seat) => seat.singleSeatDetails.seatNumber
+            ),
+            eventName:
+              seatDetails.length &&
+              seatDetails[0]?.singleSeatDetails?.eventSeatDetails?.eventDetails
+                ?.name,
+            eventStartTime:
+              seatDetails.length &&
+              seatDetails[0]?.singleSeatDetails?.eventSeatDetails?.eventDetails
+                ?.endTime,
+            eventEndTime:
+              seatDetails.length &&
+              seatDetails[0]?.singleSeatDetails?.eventSeatDetails?.eventDetails
+                ?.startTime,
+          };
+          channel.sendToQueue(
+            EMAIL_QUEUE!,
+            Buffer.from(JSON.stringify(emailPayloadJson))
+          );
+        }
 
         // Acknowledgement for Payment Queue :-
         channel.ack(msg);

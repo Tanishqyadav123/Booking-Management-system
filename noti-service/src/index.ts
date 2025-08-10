@@ -20,14 +20,30 @@ async function init() {
       }
       const msgPayload: EmailPayloadType = JSON.parse(msg?.content.toString());
 
-      const { text, userEmail } = msgPayload;
+      const {
+        text,
+        userEmail,
+        bookedSeatNumbers,
+        eventEndTime,
+        eventName,
+        eventStartTime,
+        viewerName,
+      } = msgPayload;
 
       if (!text || !userEmail) {
         throw new Error("Required Fields are not provided");
       }
 
       // Send Email :-
-      const mailResponse = await sendMailToUser({ userEmail, text });
+      const mailResponse = await sendMailToUser({
+        userEmail,
+        text,
+        bookedSeatNumbers,
+        eventEndTime,
+        eventName,
+        eventStartTime,
+        viewerName,
+      });
       if (!mailResponse) {
         throw new Error("E-ticket could not sent over mail");
       }
