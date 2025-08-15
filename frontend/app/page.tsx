@@ -9,9 +9,11 @@ import { useEffect } from "react";
 import { useAuth } from "./Context/auth.context";
 
 export default function Home() {
-  const { fetchUserDetails } = useAuth();
+  const { fetchUserDetails, userDetails } = useAuth();
   useEffect(() => {
-    fetchUserDetails();
+    if (!userDetails) {
+      fetchUserDetails();
+    }
   }, []);
   return (
     <>

@@ -66,6 +66,9 @@ export const userRegisterService = async (data: signUpInterface) => {
 
 // Fetch User Profile Details Service :-
 export const getUserDetailsService = async () => {
+  const token =
+    typeof window !== "undefined" ? localStorage.getItem("authToken") : "";
+  console.log("Token is 15  ", token);
   const res = await axios.get(
     `${process.env.NEXT_PUBLIC_BACKEND_BASE_URL}/auth/me`,
     {

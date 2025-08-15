@@ -16,7 +16,7 @@ import { useAuth } from "../Context/auth.context";
 
 export type SignInSchemaType = z.infer<typeof SignInSchema>;
 function page() {
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, setIsAdmin } = useAuth();
   const {
     register,
     handleSubmit,
@@ -51,6 +51,9 @@ function page() {
 
       if (res.data?.data?.token) {
         localStorage.setItem("authToken", res.data?.data?.token);
+        localStorage.setItem("isAdmin", isAdmin ? "1" : "0");
+        console.log("Til Here ", isAdmin);
+        setIsAdmin(isAdmin);
         setIsAuthenticated(true);
       } else {
         throw new Error("Token not found");

@@ -12,14 +12,20 @@ import React, {
 import { getUserDetailsService } from "../Services/auth.service";
 import toast from "react-hot-toast";
 import { UserProfileType } from "../responseTypes/auth.response";
+import { getAdminDetailsService } from "../Services/admin.service";
+import { AdminProfileDetailsType } from "../responseTypes/admin.response";
 
 interface authContextInterface {
   isAuthenticated: boolean | null;
-  userDetails: UserProfileType | null;
+  userDetails: UserProfileType | AdminProfileDetailsType | null;
   setIsAuthenticated: Dispatch<SetStateAction<boolean | null>>;
-  setUserDetails: Dispatch<SetStateAction<UserProfileType | null>>;
+  setUserDetails: Dispatch<
+    SetStateAction<UserProfileType | AdminProfileDetailsType | null>
+  >;
   logoutUser: () => void;
   fetchUserDetails: () => Promise<void>;
+  isAdmin: boolean;
+  setIsAdmin: Dispatch<SetStateAction<boolean>>;
 }
 const AuthContext = createContext<authContextInterface | null>(null);
 
@@ -29,7 +35,16 @@ export const AuthContextProvider = ({
   children: React.ReactElement;
 }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userDetails, setUserDetails] = useState<UserProfileType | null>(null);
+  const [userDetails, setUserDetails] = useState<
+    UserProfileType | AdminProfileDetailsType | null
+  >(null);
+  const [isAdmin, setIsAdmin] = useState<boolean>(
+    typeof window !== "undefined" && localStorage.getItem("isAdmin")
+      ? localStorage.getItem("isAdmin") == "1"
+        ? true
+        : false
+      : false
+  );
   const pathName = usePathname();
   const router = useRouter();
 
@@ -38,7 +53,10 @@ export const AuthContextProvider = ({
 
   // Logout Function :-
   const logoutUser = () => {
-    localStorage.removeItem("authToken");
+    if (typeof window !== "undefined" && localStorage.getItem("authToken")) {
+      localStorage.removeItem("authToken");
+      localStorage.removeItem("isAdmin");
+    }
     setIsAuthenticated(false);
     setUserDetails(null);
     router.push("/login");
@@ -46,7 +64,11 @@ export const AuthContextProvider = ({
 
   const fetchUserDetails = async () => {
     try {
-      const res = await getUserDetailsService();
+      console.log("Admin Is Present ", isAdmin);
+      const res = isAdmin
+        ? await getAdminDetailsService()
+        : await getUserDetailsService();
+      console.log("Res in fetchUserDetails ", res);
       if (res.success) {
         toast.success(res.message);
       }
@@ -81,6 +103,8 @@ export const AuthContextProvider = ({
         setUserDetails,
         logoutUser,
         fetchUserDetails,
+        isAdmin,
+        setIsAdmin,
       }}
     >
       {children}
